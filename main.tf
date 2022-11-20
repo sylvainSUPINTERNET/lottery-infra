@@ -39,6 +39,11 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   }
 
 
+  # TODO : 
+  # 1. Generate lambda from tf ( use zip generated from local lambda with SAM )
+  # 2. Generate trigger with this lambda on the table https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function
+
+
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_event_source_mapping
 
 
