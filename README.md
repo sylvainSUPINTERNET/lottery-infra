@@ -1,4 +1,4 @@
-generate with sam ( sam build and copy "manually + generate zip for the moment)
+generate with sam ( sam build and copy "manually + generate zip for the momenty)
 
 
 $ export AWS_ACCESS_KEY_ID=""
