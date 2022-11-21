@@ -77,6 +77,33 @@ variable "table_name" {
   default = "Lobbies"
 }
 
+resource "aws_iam_role_policy" "dynamodb_policy" {
+  policy = jsonencode(
+  {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:GetRecords",
+          "dynamodb:GetShardIterator",
+          "dynamodb:DescribeStream",
+          "dynamodb:ListShards",
+          "dynamodb:ListStreams",
+        ],
+        Effect: "Allow",
+        # Resource: aws_dynamodb_table.filenames.arn
+        Resource: "${aws_dynamodb_table.basic-dynamodb-table.arn}/*" #https://stackoverflow.com/questions/70016674/invalidparametervalueexception-cannot-access-stream
+      }
+    ]
+  }
+  )
+  role = aws_iam_role.iam_for_lambda.id
+}
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
@@ -98,36 +125,36 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 
 # https://stackoverflow.com/questions/70016674/invalidparametervalueexception-cannot-access-stream
-data "aws_iam_policy_document" "lambda_policy_document" {
-  statement {
-    actions = [
-      "dynamodb:Scan",
-      "dynamodb:Query",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:DescribeTable",
-      "dynamodb:DescribeStream",
-      "dynamodb:GetRecords",
-      "dynamodb:GetShardIterator",
-      "dynamodb:ListStreams"
-    ]
-    resources = [
-      aws_dynamodb_table.basic-dynamodb-table.arn
-    ]
-  }
-}
+# data "aws_iam_policy_document" "lambda_policy_document" {
+#   statement {
+#     actions = [
+#       "dynamodb:Scan",
+#       "dynamodb:Query",
+#       "dynamodb:GetItem",
+#       "dynamodb:PutItem",
+#       "dynamodb:UpdateItem",
+#       "dynamodb:DeleteItem",
+#       "dynamodb:DescribeTable",
+#       "dynamodb:DescribeStream",
+#       "dynamodb:GetRecords",
+#       "dynamodb:GetShardIterator",
+#       "dynamodb:ListStreams"
+#     ]
+#     resources = [
+#       aws_dynamodb_table.basic-dynamodb-table.arn
+#     ]
+#   }
+# }
 
-resource "aws_iam_policy" "dynamodb_lambda_policy" {
-  name        = "dynamodb-lambda-policy"
-  description = "This policy will be used by the lambda to write get data from DynamoDB"
-  policy      = data.aws_iam_policy_document.lambda_policy_document.json
-}
-resource "aws_iam_role_policy_attachment" "lambda_attachements" {
-  role       = aws_iam_role.iam_for_lambda.name
-  policy_arn = aws_iam_policy.dynamodb_lambda_policy.arn
-}
+# resource "aws_iam_policy" "dynamodb_lambda_policy" {
+#   name        = "dynamodb-lambda-policy"
+#   description = "This policy will be used by the lambda to write get data from DynamoDB"
+#   policy      = data.aws_iam_policy_document.lambda_policy_document.json
+# }
+# resource "aws_iam_role_policy_attachment" "lambda_attachements" {
+#   role       = aws_iam_role.iam_for_lambda.name
+#   policy_arn = aws_iam_policy.dynamodb_lambda_policy.arn
+# }
 
 
 # Archive the code or project that we want to run
